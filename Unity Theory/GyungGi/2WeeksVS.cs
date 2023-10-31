@@ -183,7 +183,172 @@ namespace Unity_Theory.GyungGi
         */
 
         /*
-        
+        캐릭터 애니메이터를 열고 Animator:Set Bool(Name, Value) 노드를 생성한다.
+        생성한 노드 Name 에 Ground 입력
+        */
+
+        /*
+        변수에 저장하기
+
+        Variables 컴포넌트는 변수를 담아두는 컴포넌트이다.
+        여기서 지정된 변수를 Set Variable 노드로 새로운 데이터를 넣을 수 있다.
+
+        또한 흐름을 받아야 하는 노드를 꼭 흐름과 연결할 필요는 없다.
+
+        데이터만 잘 연결되어 있다면 해당 노드가 실행될 때, 자신과 연결된 노드들을 먼저
+        자동으로 실행하여 데이터를 가져 온다.
+
+        이처럼 흐름 연결을 생략할 수 있지만 상황에 따라 꼭 연결해야 할 경우도 있다.
+        */
+
+        /*
+        On Update 노드를 먼저 만든다.
+
+        Input: Get Axis( Axis Name ) 노드를 생성한다.
+        Axis Name을 Horizontal 로 입력한다.
+
+        캐릭터 오브젝트를 클릭하면 인스펙터 창에 Variables 컴포넌트가 생성된 것을 확인할 수 있다.
+        Name 에 Input 이라 입력하고 타입은 float으로 지정한다.
+
+        Variables-Object-Set Input 노드를 생성한다.
+
+        On Update -> Set Variable
+        Get Axis -> Set Variable
+        */
+
+        /*
+        변수 활용하기
+
+        반대로 저장된 변수를 활용하기 위해서 Get Variable 노드를 사용하기도 한다.
+
+        이 때 중요한 점은 저장된 변수의 단계( Graph, Object, Scene... )
+        가 동일하게 맞추어야 하는 것이다.
+
+        On Fixed Update 노드 생성
+        Add node-variables-Object-Get Object Variable 노드를 생성한다.
+
+        캐릭터 움직임의 크기를 늘리기 위해 곱하기 노드를 추가한다.
+        Add node-Math-Scalar-Multiply 노드를 생성한다.
+        Get Variables -> MultiplyA, B는 3을 입력
+
+        Rigidbody 2D:Set Velocity 노드를 생성한다.
+        Vector2:Create Vector2(X,Y) 노드를 생성한다.
+
+        Multiply -> Vector2X
+
+        Add node-Rigidbody 2D:Get velocity 노드를 생성한다. -> Vector2 Get Y 노드를 생성
+        Vector2 Get Y -> Vector2Y
+        Vector2 -> Rigidbody 2D Set Velocity
+        */
+
+        /*
+        데이터를 여러 번 사용하기
+
+        하얀색 화살표인 흐름은 하나만 사용할 수 있지만 데이터는 한 번에 여러 노드로 전송할 수 있다.
+
+        여기서는 입력 값을 절대값으로 바꾸어 애니메이터에게 전달해 주면서,
+        버튼을 누르고 있을 때만 입력 방향에 따라 스프라이트를 뒤집는 로직을 만들어 본다.
+
+        Get Variable 노드를 생성한다.
+        Events-Lifecycle-on LateUpdate 노드를 생성한다.
+
+        Math-Abs(F) 노드를 생성한다.
+        Animator:Set Float(Name, Value) 노드를 생성한다.
+
+        On Late Update -> Mathf Abs -> Set Float( Name에 Speed 입력 )
+
+        Events-Input-On Button Input( Name에 Horizontal 입력, Action을 HOLD로 지정 ) 노드를 생성한다.
+        Logic-Greater 노드를 생성한다.
+        Get Variables -> Greater
+        Sprite Renderer:Set Flip X 노드를 생성한다.
+        Greater -> Set Flip X
+        On Button Input -> Set Flip X
+        */
+
+        /*
+        Events-On Trigger Stay 2D 노드를 생성하여 지면과 충돌 중인지 확인한다.
+        Collider 2D: Compare Tag(Tag) 노드를 생성한다.
+
+        On Trigger Stay 2D -> Compare Tag( Tag는 Ground 로 입력 )
+        Control-If 노드를 생성한다.
+        Compare Tag -> If
+        Set Bool 노드를 생성한다.
+        If:True -> Set Bool(Ground)
+        */
+
+        /*
+        Events-Physics 2D-On Trigger Enter 2D 노드를 생성 한다.
+        Collider 2D( Tag는 Danger 로 입력 ) 노드를 생성한다.
+        If 노드를 생성한다.
+
+        위치를 바꾸기 위해 Transform:Set Position 노드를 생성한다.
+
+        On Trigger Enter 2D -> Collider 2D -> If:True -> Set Position
+        */
+
+        /*
+        플레이어를 따라가는 카메라
+
+        카메라가 플레이어를 계속 비추려면 플레이어를 따라가 주어야 하고
+        이러한 로직도 필요하다.
+
+        이 과정에서는 카메라 Prefab에 해당 그래프가 포함되어 있다.
+
+        이렇게 Graph 에셋을 만들지 않고도 바로 컴포넌트에 그래프를 작성할 수 있는 타입을 임베드라 한다.
+
+        우리가 노드 그래프를 만들 때 두 가지 타입으로 만들 수 있는데 하나가 Graph, 그리고 다른 하나가 Embed 이다.
+        */
+
+        /*
+        코인 오브젝트에 Visual Scripting-Script Machine 컴포넌트를 추가한다.
+
+        On Trigger Enter 2D 노드를 생성한다.
+        Physics2D-On Trigger Enter 2D-Collider 2D:Compare Tag(tag) 노드를 생성한다.
+        If 노드를 생성한다.
+
+        Script Graph 에서 App 단위를 선택( 게임에 전체적으로 변수를 사용 )
+        Name:Score 입력, 타입은 정수형
+        Get Valuables 노드를 생성한다.
+        Math-Scalar-Add 노드를 생성한다.
+        Set Valuables 노드를 생성한다.
+
+        if -> Set Valueables
+        Get Valueables -> Add -> Set Valueables
+
+        Game Object:Set Active(Value) 노드를 생성한다.
+        */
+
+        /*
+        Events-Lifecycle-On Late Update 노드를 생성한다.
+        Variables-Application-Get Score 노드를 생성한다.
+        Text:Set Text 노드를 생성한다.
+
+        String:Concat(Arg0, Arg1) 노드를 생성한다.( 두개의 문자열을 하나로 합친다. )
+        String 노드를 생성하고 점수라 입력
+        */
+
+        /*
+        머신 소스 타입
+
+        임베드 Embed
+
+        추가로 에셋을 생성하지 않고, 컴포넌트의 인스턴스 데이터로 귀속되는 방식
+
+        - 에셋이 생성되지 않음.
+        - 장면에 포함된 상태.
+        - 장면의 다른 오브젝트에 바로 접근 가능.
+        - 오브젝트가 삭제되면 같이 삭제. ( 되돌릴 수 없다 )
+        - 불완전 라이브 에디팅. ( 저장이 되지 않는다 )
+
+        그래프 Graph
+
+        일반적인 C# 스크립트와 동일한 방식으로 에셋을 생성하고 머신 컴포넌트와 연결하는 방식
+
+        - 에셋이 생성됨.
+        - 장면에 포함되지 않음.
+        - 장면의 다른 오브젝트에 바로 접근 불가능. ( 변수를 통한 접근 필요 )
+        - 오브젝트가 삭제되어도 유지.
+        - 완전한 라이브 에디팅
         */
     }
 }
