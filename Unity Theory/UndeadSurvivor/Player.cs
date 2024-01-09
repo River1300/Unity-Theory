@@ -76,3 +76,31 @@ namespace Unity_Theory.UndeadSurvivor
         이 방향 값을 이용하여 플레이어를 이동시키거나, 
         특정 방향으로 공격을 발사하는 등의 동작을 수행한다.
          */
+
+        /*
+        2D 스프라이트 이미지가 움직이는 방향에 따라서 반전되어야 함
+        [사용자의 방향키 입력을 받음] -> [x 방향으로 -,0,+ 를 확인] -> [반전]
+        만약에 inputVec.x 값이 0이 아닐 경우 스프라이트를 반전 시키도록 한다.
+         */
+        void LateUpdate()
+        {
+            if (inputVec.x != 0) spriter.flipX = inputVec.x < 0;
+            anim.SetFloat("Speed", inputVec.magnitude);
+        }
+        /*
+        셀 애니메이션 등록
+        애니메이터 컨트롤러를 만들고 씬에 배치된 플레이어 이미지에 스프라이트를 애니메이션 단위로 등록
+        애니메이터 컨트롤러로 가서 트랜지션을 연결하고 파라미터를 추가한다.
+        움직임에 따라서 파라미터에 로직을 연결
+
+        Animator Override Controller 를 통해서 다른 캐릭터들에게 각각 똑같은 애니메이션을 연결해 준다.
+
+        Animator Override Controller(애니메이터 오버라이드 컨트롤러)는 Unity의 Animator 
+        컴포넌트에서 사용되는 스크립트 기반의 오버라이딩 시스템이다. 
+        이 컨트롤러는 기존에 Animator 컴포넌트에 연결된 Animator Controller의 일부 애니메이션 클립을 
+        런타임에 다른 애니메이션 클립으로 바꾸는 데 사용된다.
+
+        주로 캐릭터나 적 캐릭터 등에 사용자 정의 애니메이션을 적용할 때 유용 
+        예를 들어, 여러 캐릭터에 같은 Animator Controller를 사용하되, 
+        캐릭터마다 다른 애니메이션을 적용하고 싶을 때 Animator Override Controller를 사용한다.
+         */
