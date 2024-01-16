@@ -104,3 +104,27 @@ namespace Unity_Theory.UndeadSurvivor
         예를 들어, 여러 캐릭터에 같은 Animator Controller를 사용하되, 
         캐릭터마다 다른 애니메이션을 적용하고 싶을 때 Animator Override Controller를 사용한다.
          */
+
+        /*
+        타일 그리기
+        스프라이트 폴더에서 Tiles 아틀라스를 통해 맵을 그릴 예정
+        [Tile Palette] -> [Rule Tile]
+        하이어라키 창에서 [2D Object] -> [TileMap] -> [Rectangular]
+        플레이어의 이동 방향에 따라서 타일맵의 좌표를 재배치 하고자 한다.
+        플레이어를 따라다니는 카메라 때문에 플레이어는 항상 화면 중앙에 있는 것 처럼 보인다.
+        [타일맵의 크기를 화면 가득 채우고도 남게 만들고] -> [타일맵을 3개 더 복사] -> [플레이어의 좌표와 타일맵의 좌표를 비교] -> [화면에서 벗어난 타일맵은 플레이어 이동 방향으로 미리 이동]
+        Reposition 스크립트에 OnTriggerExit2D 함수를 만든다.
+        [타일맵과 플레이어간의 거리를 x, y 별로 비교] -> [x 축 따로 y축 따로 거리를 변수로 저장] -> [플레이어가 어느 방향으로 가고 있는지 변수로 저장]
+         */
+        void OnTriggerExit2D(Collider2D other)
+        {
+            if (!other.CompareTag("Area")) return;
+            Vector3 playerPos = GameManager.instance.player.transform.position;
+            Vector3 myPos = transform.position;
+            float diffX = MathF.Abs(playerPos.x - myPos.x);
+            float diffY = MathF.Abs(playerPos.y - myPos.y);
+
+            Vector3 playerDir = GameManager.instance.player.inputVec;
+            float dirX = playerDir.x < 0 ? -1 : 1;
+            float ditY = playerDir.y < 0 ? -1 : 1;
+        }
